@@ -1,0 +1,23 @@
+<databaseChangeLog
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+   http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.4.xsd">
+
+    <changeSet id="insert_products" author="Ahmed.Baz" labels="order-service">
+        <sql>
+            insert into products (id, name, description, quantity, price)
+            values (nextval('products_seq'), 'product 1', 'description for product 1', 100, 19.99),
+                   (nextval('products_seq'), 'product 2', 'description for product 2', 150, 24.99),
+                   (nextval('products_seq'), 'product 3', 'description for product 3', 80, 12.99),
+                   (nextval('products_seq'), 'product 4', 'description for product 4', 102, 39.99),
+                   (nextval('products_seq'), 'product 5', 'description for product 5', 60, 7.99),
+                   (nextval('products_seq'), 'product 6', 'description for product 6', 120, 14.99),
+                   (nextval('products_seq'), 'product 7', 'description for product 7', 182, 29.99),
+                   (nextval('products_seq'), 'product 8', 'description for product 8', 40, 9.99),
+                   (nextval('products_seq'), 'product 9', 'description for product 9', 250, 49.99),
+                   (nextval('products_seq'), 'product 10', 'description for product 10', 30, 11.99)
+        </sql>
+    </changeSet>
+
+</databaseChangeLog>

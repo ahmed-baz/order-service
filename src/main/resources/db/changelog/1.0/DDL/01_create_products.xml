@@ -1,0 +1,31 @@
+<databaseChangeLog
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+   http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.4.xsd">
+
+    <changeSet id="create_product" author="Ahmed.Baz" labels="order-service">
+        <sql>
+            create table products
+            (
+                id               int8           not null,
+                name             varchar(255)   not null,
+                description      varchar(255),
+                quantity         int8           not null,
+                price            numeric(38, 2) not null,
+                created_by       varchar(255),
+                last_modified_by varchar(255),
+                created_at       timestamp(6) default current_date,
+                last_modified_at timestamp(6),
+                constraint product_id_pkey primary key (id),
+                constraint product_name_ukey unique (name)
+            );
+        </sql>
+        <sql>
+            create sequence products_seq
+                increment 1
+                start 1;
+        </sql>
+    </changeSet>
+
+</databaseChangeLog>
