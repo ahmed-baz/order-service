@@ -2,6 +2,7 @@ package org.ecommerce.app.service.implementation;
 
 
 import lombok.RequiredArgsConstructor;
+import org.ecommerce.app.dto.Product;
 import org.ecommerce.app.dto.ProductPurchaseRequest;
 import org.ecommerce.app.dto.ProductPurchaseResponse;
 import org.ecommerce.app.entity.ProductEntity;
@@ -55,6 +56,13 @@ public class ProductServiceImpl implements ProductService {
         }
 
         return productPurchaseResponses;
+    }
+
+    @Override
+    public List<Product> getProducts() {
+        return productRepo.findAll().stream()
+                .map(entity -> new Product(entity.getName(), entity.getDescription(), entity.getPrice()))
+                .toList();
     }
 
 }
