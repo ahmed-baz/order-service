@@ -2,10 +2,7 @@ package org.ecommerce.app.service.implementation;
 
 
 import lombok.RequiredArgsConstructor;
-import org.ecommerce.app.dto.OrderRequest;
-import org.ecommerce.app.dto.OrderResponse;
-import org.ecommerce.app.dto.ProductPurchaseRequest;
-import org.ecommerce.app.dto.ProductPurchaseResponse;
+import org.ecommerce.app.dto.*;
 import org.ecommerce.app.entity.OrderEntity;
 import org.ecommerce.app.entity.OrderLineEntity;
 import org.ecommerce.app.enums.OrderStatusEnum;
@@ -17,6 +14,7 @@ import org.ecommerce.app.repo.OrderRepo;
 import org.ecommerce.app.repo.ProductRepo;
 import org.ecommerce.app.service.CacheManagerService;
 import org.ecommerce.app.service.OrderService;
+import org.ecommerce.app.service.PaymentService;
 import org.ecommerce.app.service.ProductService;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.security.core.Authentication;
@@ -39,6 +37,7 @@ public class OrderServiceImpl implements OrderService {
     private final OrderLineRepo orderLineRepo;
     private final ProductService productService;
     private final CacheManagerService cacheManagerService;
+    private final PaymentService paymentService;
 
     @Override
     @Transactional
@@ -58,7 +57,7 @@ public class OrderServiceImpl implements OrderService {
         orderEntity.setStatus(OrderStatusEnum.PURCHASING);
         orderRepo.save(orderEntity);
 
-        //TODO DO PAYMENT
+        paymentService.processPayment(new PaymentRequest(orderEntity.getId(), orderEntity.getTotalAmount(), request.paymentMethod()));
 
         saveOrderLine(productPurchaseResponse, orderEntity);
 
