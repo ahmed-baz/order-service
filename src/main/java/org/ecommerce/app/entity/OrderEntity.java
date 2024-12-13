@@ -1,10 +1,7 @@
 package org.ecommerce.app.entity;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 import org.ecommerce.app.enums.OrderStatusEnum;
 
 import java.math.BigDecimal;
@@ -15,6 +12,7 @@ import java.util.List;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
+@Builder
 @Entity(name = "orders")
 public class OrderEntity extends EntityBase {
 
@@ -26,7 +24,7 @@ public class OrderEntity extends EntityBase {
     private BigDecimal totalAmount;
     @Enumerated(EnumType.STRING)
     private OrderStatusEnum status;
-    @OneToMany(mappedBy = "order")
+    @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<OrderLineEntity> orderLines;
 
 }

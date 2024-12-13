@@ -1,6 +1,7 @@
 package org.ecommerce.app.controller;
 
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.ecommerce.app.dto.AppResponse;
 import org.ecommerce.app.dto.OrderRequest;
@@ -19,7 +20,7 @@ public class OrderController {
     private final OrderService orderService;
 
     @PostMapping
-    public AppResponse<OrderResponse> createOrder(@RequestBody OrderRequest request) {
+    public AppResponse<OrderResponse> createOrder(@Valid @RequestBody OrderRequest request) {
         return new AppResponse<>(orderService.create(request), HttpStatus.CREATED);
     }
 
