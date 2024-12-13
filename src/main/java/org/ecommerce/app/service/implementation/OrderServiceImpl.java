@@ -9,12 +9,16 @@ import org.ecommerce.app.dto.ProductPurchaseResponse;
 import org.ecommerce.app.entity.OrderEntity;
 import org.ecommerce.app.entity.OrderLineEntity;
 import org.ecommerce.app.enums.OrderStatusEnum;
+import org.ecommerce.app.exception.OrderException;
+import org.ecommerce.app.exception.OrderNotFoundException;
 import org.ecommerce.app.mapper.OrderMapper;
 import org.ecommerce.app.repo.OrderLineRepo;
 import org.ecommerce.app.repo.OrderRepo;
 import org.ecommerce.app.repo.ProductRepo;
 import org.ecommerce.app.service.OrderService;
 import org.ecommerce.app.service.ProductService;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -88,16 +92,43 @@ public class OrderServiceImpl implements OrderService {
 
     @Override
     public void delete(Long id) {
-
+        OrderEntity orderEntity = orderRepo.findById(id).orElseThrow(() -> new OrderNotFoundException(id));
+        if (!orderEntity.getCreatedBy().equals(getUserName())) {
+            throw new OrderNotFoundException(id);
+        }
+        OrderStatusEnum status = orderEntity.getStatus();
+        switch (status) {
+            case PENDING:
+                orderRepo.deleteById(id);
+                break;
+            case PURCHASING:
+            case PENDING_PAYMENT:
+            case PAYMENT_FAILED:
+                orderEntity.setStatus(OrderStatusEnum.CANCELLED);
+                orderRepo.save(orderEntity);
+                break;
+            default:
+                throw new OrderException("Cannot delete order with status " + status);
+        }
     }
 
     @Override
     public List<OrderResponse> findAll() {
-        return List.of();
+        List<OrderEntity> orders = orderRepo.findByCreatedBy(getUserName());
+        return orderMapper.toOrderResponse(orders);
     }
 
     @Override
     public OrderResponse findById(Long id) {
-        return null;
+        OrderEntity orderEntity = orderRepo.findById(id).orElseThrow(() -> new OrderNotFoundException(id));
+        if (!orderEntity.getCreatedBy().equals(getUserName())) {
+            throw new OrderNotFoundException(id);
+        }
+        return orderMapper.toOrderResponse(orderEntity);
+    }
+
+    private String getUserName() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        return authentication.getName();
     }
 }

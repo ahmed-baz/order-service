@@ -5,7 +5,7 @@ import lombok.RequiredArgsConstructor;
 import org.ecommerce.app.dto.ProductPurchaseRequest;
 import org.ecommerce.app.dto.ProductPurchaseResponse;
 import org.ecommerce.app.entity.ProductEntity;
-import org.ecommerce.app.exception.CreateOrderException;
+import org.ecommerce.app.exception.OrderException;
 import org.ecommerce.app.repo.ProductRepo;
 import org.ecommerce.app.service.ProductService;
 import org.springframework.stereotype.Service;
@@ -29,7 +29,7 @@ public class ProductServiceImpl implements ProductService {
         List<Long> productIds = purchaseList.stream().map(ProductPurchaseRequest::productId).toList();
         List<ProductEntity> products = productRepo.findByIdIn(productIds);
         if (products.size() != productIds.size()) {
-            throw new CreateOrderException("Some of the products do not exist");
+            throw new OrderException("Some of the products do not exist");
         } else {
             products.forEach(product -> productsMap.put(product.getId(), product));
         }
@@ -37,7 +37,7 @@ public class ProductServiceImpl implements ProductService {
         purchaseList.forEach(request -> {
             ProductEntity productEntity = productsMap.get(request.productId());
             if (request.quantity() > productEntity.getQuantity()) {
-                throw new CreateOrderException("Product " + productEntity.getName() + " is out of stock");
+                throw new OrderException("Product " + productEntity.getName() + " is out of stock");
             }
         });
 
