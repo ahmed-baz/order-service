@@ -4,24 +4,24 @@
         xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
    http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.4.xsd">
 
-    <changeSet id="create_order_line" author="Ahmed.Baz" labels="order-service">
+    <changeSet id="create_transactions" author="Ahmed.Baz" labels="order-service">
         <sql>
-            create table order_line
+            create table transactions
             (
-                id               int8 not null,
-                product_id       int8 not null,
-                order_id         int8 not null,
-                quantity         int8 not null,
+                id               int8           not null,
+                order_id         int8           not null,
+                amount           numeric(38, 2) not null,
+                payment_method   varchar(255)   not null,
                 created_by       varchar(255),
                 last_modified_by varchar(255),
                 created_at       timestamp(6) default current_date,
                 last_modified_at timestamp(6),
-                constraint order_line_id_pkey primary key (id),
-                constraint order_line_fk foreign key (order_id) references orders (id)
+                constraint transactions_id_pkey primary key (id),
+                constraint transactions_order_fk foreign key (order_id) references orders (id)
             );
         </sql>
         <sql>
-            create sequence order_line_seq
+            create sequence transactions_seq
                 increment 1
                 start 1;
         </sql>

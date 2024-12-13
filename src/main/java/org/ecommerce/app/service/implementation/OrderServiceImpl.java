@@ -17,6 +17,7 @@ import org.ecommerce.app.service.OrderService;
 import org.ecommerce.app.service.PaymentService;
 import org.ecommerce.app.service.ProductService;
 import org.springframework.cache.annotation.Cacheable;
+import org.springframework.context.ApplicationContext;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
@@ -38,16 +39,16 @@ public class OrderServiceImpl implements OrderService {
     private final ProductService productService;
     private final CacheManagerService cacheManagerService;
     private final PaymentService paymentService;
+    private final ApplicationContext context;
 
     @Override
-    @Transactional
-    public synchronized OrderResponse create(OrderRequest request) {
-
+    public OrderResponse create(OrderRequest request) {
         OrderEntity orderEntity = initiateOrder();
-
-        return createOrUpdate(request, orderEntity);
+        OrderService proxy = context.getBean(OrderService.class);
+        return proxy.createOrUpdate(request, orderEntity);
     }
 
+    @Transactional
     public synchronized OrderResponse createOrUpdate(OrderRequest request, OrderEntity orderEntity) {
 
         List<ProductPurchaseRequest> productPurchaseRequests = request.products();
