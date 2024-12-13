@@ -43,6 +43,11 @@ public class OrderServiceImpl implements OrderService {
 
         OrderEntity orderEntity = initiateOrder();
 
+        return createOrUpdate(request, orderEntity);
+    }
+
+    public synchronized OrderResponse createOrUpdate(OrderRequest request, OrderEntity orderEntity) {
+
         List<ProductPurchaseRequest> productPurchaseRequests = request.products();
         List<ProductPurchaseResponse> productPurchaseResponse = productService.purchaseProduct(productPurchaseRequests);
 
@@ -87,15 +92,28 @@ public class OrderServiceImpl implements OrderService {
 
     @Override
     public OrderResponse update(Long id, OrderRequest request) {
-        return null;
+        OrderEntity orderEntity = getOrderById(id);
+        OrderStatusEnum status = orderEntity.getStatus();
+        switch (status) {
+            case PENDING:
+                return createOrUpdate(request, orderEntity);
+            default:
+                throw new OrderException("Cannot update order with status " + status);
+        }
     }
 
-    @Override
-    public void delete(Long id) {
+    private OrderEntity getOrderById(Long id) {
         OrderEntity orderEntity = orderRepo.findById(id).orElseThrow(() -> new OrderNotFoundException(id));
         if (!orderEntity.getCreatedBy().equals(getUserName())) {
             throw new OrderNotFoundException(id);
         }
+        return orderEntity;
+    }
+
+
+    @Override
+    public void delete(Long id) {
+        OrderEntity orderEntity = getOrderById(id);
         OrderStatusEnum status = orderEntity.getStatus();
         switch (status) {
             case PENDING:
