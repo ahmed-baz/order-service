@@ -16,6 +16,8 @@ public interface OrderService {
 
     List<OrderResponse> findAll();
 
+    List<OrderResponse> findAll(String email);
+
     OrderResponse findById(Long id);
 
 }

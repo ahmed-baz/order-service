@@ -15,8 +15,10 @@ import org.ecommerce.app.mapper.OrderMapper;
 import org.ecommerce.app.repo.OrderLineRepo;
 import org.ecommerce.app.repo.OrderRepo;
 import org.ecommerce.app.repo.ProductRepo;
+import org.ecommerce.app.service.CacheManagerService;
 import org.ecommerce.app.service.OrderService;
 import org.ecommerce.app.service.ProductService;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
@@ -36,6 +38,7 @@ public class OrderServiceImpl implements OrderService {
     private final ProductRepo productRepo;
     private final OrderLineRepo orderLineRepo;
     private final ProductService productService;
+    private final CacheManagerService cacheManagerService;
 
     @Override
     @Transactional
@@ -61,6 +64,9 @@ public class OrderServiceImpl implements OrderService {
 
         orderEntity.setStatus(OrderStatusEnum.APPROVED);
         orderRepo.save(orderEntity);
+
+        clearCachedOrders();
+
         return orderMapper.toOrderResponse(orderEntity);
     }
 
@@ -118,12 +124,14 @@ public class OrderServiceImpl implements OrderService {
         switch (status) {
             case PENDING:
                 orderRepo.deleteById(id);
+                clearCachedOrders();
                 break;
             case PURCHASING:
             case PENDING_PAYMENT:
             case PAYMENT_FAILED:
                 orderEntity.setStatus(OrderStatusEnum.CANCELLED);
                 orderRepo.save(orderEntity);
+                clearCachedOrders();
                 break;
             default:
                 throw new OrderException("Cannot delete order with status " + status);
@@ -133,6 +141,13 @@ public class OrderServiceImpl implements OrderService {
     @Override
     public List<OrderResponse> findAll() {
         List<OrderEntity> orders = orderRepo.findByCreatedBy(getUserName());
+        return orderMapper.toOrderResponse(orders);
+    }
+
+    @Override
+    @Cacheable(value = "orders", key = "#email")
+    public List<OrderResponse> findAll(String email) {
+        List<OrderEntity> orders = orderRepo.findByCreatedBy(email);
         return orderMapper.toOrderResponse(orders);
     }
 
@@ -148,5 +163,9 @@ public class OrderServiceImpl implements OrderService {
     private String getUserName() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         return authentication.getName();
+    }
+
+    private void clearCachedOrders() {
+        cacheManagerService.clearCacheByKey("orders", getUserName());
     }
 }

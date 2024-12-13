@@ -8,6 +8,8 @@ import org.ecommerce.app.dto.OrderRequest;
 import org.ecommerce.app.dto.OrderResponse;
 import org.ecommerce.app.service.OrderService;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -36,7 +38,8 @@ public class OrderController {
 
     @GetMapping
     public AppResponse<List<OrderResponse>> getAllOrders() {
-        return new AppResponse<>(orderService.findAll());
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        return new AppResponse<>(orderService.findAll(authentication.getName()));
     }
 
     @DeleteMapping("/{id}")
