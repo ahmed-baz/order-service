@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Order Service</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+        }
+
+        header {
+            background-color: #2c3e50;
+            color: white;
+            padding: 20px 0;
+            text-align: center;
+        }
+
+        header h1 {
+            margin: 0;
+            font-size: 2.5em;
+        }
+
+        section {
+            padding: 20px;
+            margin: 10px 0;
+        }
+
+        h2 {
+            color: #2c3e50;
+            border-bottom: 2px solid #2980b9;
+            padding-bottom: 5px;
+        }
+
+        ul {
+            list-style: none;
+            padding-left: 0;
+        }
+
+        ul li {
+            background-color: #ecf0f1;
+            padding: 10px;
+            margin: 10px 0;
+            border-left: 5px solid #2980b9;
+        }
+
+        pre {
+            background-color: #34495e;
+            color: white;
+            padding: 15px;
+            border-radius: 5px;
+            font-size: 1.1em;
+        }
+
+        .feature-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            justify-content: space-between;
+        }
+
+        .feature-item {
+            background-color: #ecf0f1;
+            padding: 15px;
+            border-radius: 5px;
+            width: 48%;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+
+        footer {
+            text-align: center;
+            padding: 10px;
+            background-color: #2c3e50;
+            color: white;
+        }
+    </style>
+</head>
+<body>
+
+<header>
+    <h1>Order Service</h1>
+</header>
+
+<section>
+    <h2>Introduction</h2>
+    <p>This is a <strong>Spring Boot</strong> application that demonstrates how to build a RESTful service with <strong>CRUD</strong>
+        operations, using the power of <strong>Spring Security</strong> and OAuth server <strong>Keycloak</strong> for
+        authentication and authorization, and using <strong>PostgreSQL</strong> for data persistence.</p>
+    <p>The service manages CRUD operations for <code>Order</code> and <code>Product</code>, and exposes the following
+        CRUD APIs:</p>
+
+    <ul>
+        <li><strong>get products</strong>: to get products list.</li>
+        <li><strong>create order</strong>: to create new order.</li>
+        <li><strong>update order</strong>: to update existing order (update the PENDING order only).</li>
+        <li><strong>delete order</strong>: to delete existing order (delete the PENDING order only).</li>
+        <li><strong>get orders</strong>: to get user orders list (depending on the user email from the token).</li>
+        <li><strong>get order by ID</strong>: to get order by ID.</li>
+    </ul>
+</section>
+
+<section>
+    <h2>Features</h2>
+    <div class="feature-list">
+        <div class="feature-item">
+            <h3>Security & OAuth</h3>
+            <p>Using <strong>Spring Security</strong> and <strong>Keycloak</strong> OAuth server for authentication and
+                authorization.</p>
+        </div>
+        <div class="feature-item">
+            <h3>CRUD Operations</h3>
+            <p><strong>CRUD operations</strong> using Spring Boot for managing orders and products.</p>
+        </div>
+        <div class="feature-item">
+            <h3>Database</h3>
+            <p><strong>PostgreSQL</strong> as the database with Liquibase for migrations.</p>
+        </div>
+        <div class="feature-item">
+            <h3>Messaging</h3>
+            <p>Integration with <strong>RabbitMQ</strong> for messaging.</p>
+        </div>
+        <div class="feature-item">
+            <h3>Caching</h3>
+            <p>Using <strong>Spring Cache</strong> and <strong>Hazelcast</strong> for caching.</p>
+        </div>
+        <div class="feature-item">
+            <h3>API Documentation</h3>
+            <p>Using <strong>OpenAPI</strong> for API documentation.</p>
+        </div>
+        <div class="feature-item">
+            <h3>Database Auditing</h3>
+            <p>Enabling <strong>database auditing</strong> for better traceability.</p>
+        </div>
+        <div class="feature-item">
+            <h3>Code Generation</h3>
+            <p>Using <strong>Lombok</strong> for code generation and <strong>Mapstruct</strong> for object mapping.</p>
+        </div>
+        <div class="feature-item">
+            <h3>Containerization</h3>
+            <p>Using <strong>Docker</strong> for containerization of the application.</p>
+        </div>
+    </div>
+</section>
+
+<section>
+    <h2>Prerequisites</h2>
+    <p>Before running the application, ensure you have the following installed:</p>
+    <ul>
+        <li><strong>Java 17+</strong> (Recommended)</li>
+        <li><strong>Maven 3.8+</strong></li>
+        <li><strong>PostgreSQL</strong> (either locally or via Docker)</li>
+        <li><strong>Docker</strong> (optional, for PostgreSQL container)</li>
+    </ul>
+</section>
+
+<section>
+    <h2>Setup Instructions</h2>
+    <p>Follow these steps to get the service running:</p>
+    <pre>
+git clone https://github.com/ahmed-baz/order-service.git
+cd order-service/docker
+docker compose up -d
+    </pre>
+    <p>Login to Keycloak at <a href="http://localhost:9696" target="_blank">http://localhost:9696</a> with admin/admin.
+    </p>
+    <ul>
+        <li>Create a realm <strong>order-service</strong></li>
+        <li>Create a client <strong>order-api</strong></li>
+        <li>Create a new user to test the service</li>
+    </ul>
+</section>
+
+<footer>
+    <p>&copy; 2024 Order Service. All Rights Reserved.</p>
+</footer>
+
+</body>
+</html>
