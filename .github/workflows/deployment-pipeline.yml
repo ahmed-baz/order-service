@@ -1,0 +1,72 @@
+name: CI/CD pipeline to build and deploy order-service on AWS EC2
+
+on:
+  push:
+    branches: [ "master" ]
+
+jobs:
+  compile:
+    name: compile the project
+    runs-on: ubuntu-latest
+    steps:
+      - name: checkout the master
+        uses: actions/checkout@v4
+      - name: Setup JDK 17
+        uses: actions/setup-java@v4
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+      - name: build with Maven
+        run: mvn clean compile
+  
+  build:
+    name: build the package
+    needs: [ compile ]
+    runs-on: ubuntu-latest
+    steps:
+      - name: checkout the master
+        uses: actions/checkout@v4
+      - name: Setup JDK 17
+        uses: actions/setup-java@v4
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+      - name: build with Maven
+        run: mvn clean package -DskipTests
+  
+  prepare_image:
+    name: build the docker image, and push it to the Docker Hub
+    needs: [ build ]
+    runs-on: ubuntu-latest
+    steps:
+      - name: checkout the master
+        uses: actions/checkout@v4
+      - name: Setup JDK 17
+        uses: actions/setup-java@v4
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+          cache: maven
+      - name: build and push the image to Docker Hub
+        uses: mr-smithers-excellent/docker-build-push@v6
+        with:
+          context: .
+          file: ./Dockerfile
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+          image: ahmedbaz/order-service
+          tags: latest
+          platforms: linux/amd64
+          registry: docker.io
+          push: true
+  deploy:
+    name: deploy the image on EC2
+    needs: [ prepare_image ]
+    runs-on: [ self-hosted ]
+    steps:
+      - name: pull image from docker hub
+        run: docker pull ahmedbaz/order-service:latest
+      - name: delete the old container
+        run: docker rm -f order-service
+      - name: run the docker container
+        run: docker run -d -e ACTIVE_PROFILE=prod -p 8081:8081 --name order-service ahmedbaz/order-service:latest
