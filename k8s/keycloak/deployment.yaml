@@ -1,0 +1,44 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: kc-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: keycloak
+  template:
+    metadata:
+      labels:
+        app: keycloak
+    spec:
+      containers:
+        - name: keycloak
+          image: quay.io/keycloak/keycloak:24.0.2
+          ports:
+            - containerPort: 8080
+          args: [ "start-dev" ]
+          env:
+            - name: KEYCLOAK_ADMIN
+              valueFrom:
+                secretKeyRef:
+                  name: kc-secret
+                  key: keycloak_admin
+            - name: KEYCLOAK_ADMIN_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: kc-secret
+                  key: keycloak_password
+            - name: KC_DB_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: kc-secret
+                  key: kc_db_username
+            - name: KC_DB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: kc-secret
+                  key: kc_db_password
+          envFrom:
+            - configMapRef:
+                name: kc-config
